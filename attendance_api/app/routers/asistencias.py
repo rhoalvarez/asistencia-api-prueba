@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -7,6 +7,13 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..database import get_db
 from .docente_materia import DIAS_SEMANA_ES
+
+
+HORA_ARGENTINA = timezone(timedelta(hours=-3))
+
+def ahora_argentina():
+    return datetime.now(HORA_ARGENTINA).replace(tzinfo=None)
+
 
 router = APIRouter(prefix="/asistencias", tags=["Asistencias"])
 
@@ -60,7 +67,7 @@ def registrar_entrada(datos: schemas.AsistenciaEntradaCreate, db: Session = Depe
     nueva_asistencia = models.Asistencia(
         id_usuario=datos.id_usuario,
         id_materia=id_materia,
-        fecha_hora_entrada=datetime.now(),
+        fecha_hora_entrada=ahora_argentina(),
         fecha_hora_salida=None,
         tema_dictado=None,
     )
@@ -88,7 +95,7 @@ def registrar_salida(
     if asistencia.fecha_hora_salida is not None:
         raise HTTPException(status_code=400, detail="Este registro ya tiene una salida marcada")
 
-    asistencia.fecha_hora_salida = datos.fecha_hora_salida or datetime.now()
+    asistencia.fecha_hora_salida = datos.fecha_hora_salida or ahora_argentina()
     db.commit()
     db.refresh(asistencia)
     return asistencia
@@ -124,7 +131,7 @@ def cargar_tema_dictado(
             status_code=400, detail="Solo los docentes pueden cargar tema dictado"
         )
 
-    dia_actual = DIAS_SEMANA_ES[datetime.now().weekday()]
+    dia_actual = DIAS_SEMANA_ES[ahora_argentina().weekday()]
 
     asignacion_valida = (
         db.query(models.DocenteMateria)
