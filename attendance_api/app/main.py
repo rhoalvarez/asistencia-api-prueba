@@ -19,15 +19,15 @@ app = FastAPI(
 # Permitir que React se conecte con la API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-        "https://rhoalvarez.github.io",
-
-        "https://ies-administrativo-prueba.vercel.app",
-    ],
+   allow_origins=[
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "https://rhoalvarez.github.io",
+    "https://ies-administrativo-prueba.vercel.app",
+    "https://ies-registro-asistencia-prueba.vercel.app",
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
